@@ -22,15 +22,17 @@ public class SignInActiivty extends Activity
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener {
 
-    EditText email;
-    String TAG = "EasySignInExample";
+    private static final String TAG = "EasySignInExample";
+    private static final int SIGN_IN_INTENT_CODE = 100;
+    private EditText email;
+    private EditText name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_activity);
         email = (EditText) findViewById(R.id.email);
-        setUpEasySignUp();
+        name = (EditText) findViewById(R.id.name);
         email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,7 +54,7 @@ public class SignInActiivty extends Activity
         PendingIntent intent =
                 Auth.CredentialsApi.getHintPickerIntent(googleApiClient, hintRequest);
         try {
-            startIntentSenderForResult(intent.getIntentSender(), 100, null, 0, 0, 0);
+            startIntentSenderForResult(intent.getIntentSender(), SIGN_IN_INTENT_CODE, null, 0, 0, 0);
         } catch (IntentSender.SendIntentException e) {
             e.printStackTrace();
         }
@@ -77,18 +79,12 @@ public class SignInActiivty extends Activity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_HINT) {
+        if (requestCode == SIGN_IN_INTENT_CODE) {
             if (resultCode == RESULT_OK) {
                 Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
-                Intent intent;
-                // Check for the user ID in your user database.
-                if (userDatabaseContains(credential.getId())) {
-                    intent = new Intent(this, SignInActivity.class);
-                } else {
-                    intent = new Intent(this, SignUpNewUserActivity.class);
-                }
-                intent.putExtra("com.mycompany.myapp.SIGNIN_HINTS", credential);
-                startActivity(intent);
+                email.setText(credential.getId());
+                name.setText(credential.getName());
+                // Check if user id exists in database and handle accordingly
             } else {
                 Toast.makeText(this, "Hint Read Failed", Toast.LENGTH_SHORT).show();
             }
