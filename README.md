@@ -1,3 +1,3 @@
 Example showing how to utilize easy sign up / sign in process for marshmallow and up devices
 
-![Video Walkthrough](example.mp4)
+![Video Walkthrough](example.gif)
